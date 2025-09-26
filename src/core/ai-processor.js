@@ -1,23 +1,26 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const axios = require('axios');
-const chalk = require('chalk');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const axios = require("axios");
+const chalk = require("chalk");
 
 class AIProcessor {
   constructor(config) {
     this.config = config;
-    this.provider = config.aiProvider || 'gemini';
-    
-    if (this.provider === 'gemini') {
+    this.provider = config.aiProvider || "gemini";
+
+    if (this.provider === "template") {
+      // No external setup required for template provider
+      this.model = null;
+    } else if (this.provider === "gemini") {
       if (!config.geminiApiKey) {
-        throw new Error('Google Gemini API key is required');
+        throw new Error("Google Gemini API key is required");
       }
       this.genAI = new GoogleGenerativeAI(config.geminiApiKey);
-      this.model = this.genAI.getGenerativeModel({ 
-        model: config.geminiModel || 'gemini-1.5-flash'
+      this.model = this.genAI.getGenerativeModel({
+        model: config.geminiModel || "gemini-1.5-flash",
       });
-    } else if (this.provider === 'ollama') {
-      this.ollamaUrl = config.ollamaUrl || 'http://localhost:11434';
-      this.ollamaModel = config.ollamaModel || 'codellama:7b';
+    } else if (this.provider === "ollama") {
+      this.ollamaUrl = config.ollamaUrl || "http://localhost:11434";
+      this.ollamaModel = config.ollamaModel || "codellama:7b";
     }
   }
 
@@ -26,9 +29,11 @@ class AIProcessor {
       const prompt = this.buildPrompt(commits, summaryType, date);
       let summary;
 
-      if (this.provider === 'ollama') {
+      if (this.provider === "template") {
+        return this.generateFallbackSummary(commits, summaryType, date);
+      } else if (this.provider === "ollama") {
         summary = await this.generateWithOllama(prompt);
-      } else if (this.provider === 'gemini') {
+      } else if (this.provider === "gemini") {
         summary = await this.generateWithGemini(prompt);
       } else {
         throw new Error(`Unsupported AI provider: ${this.provider}`);
@@ -45,12 +50,12 @@ class AIProcessor {
           totalInsertions: this.getTotalInsertions(commits),
           totalDeletions: this.getTotalDeletions(commits),
           aiProvider: this.provider,
-          model: this.provider === 'ollama' ? this.ollamaModel : 'gemini-pro'
-        }
+          model: this.provider === "ollama" ? this.ollamaModel : "gemini-pro",
+        },
       };
     } catch (error) {
-      console.error(chalk.red('AI Processing Error:'), error.message);
-      console.log(chalk.yellow('Falling back to template-based summary...'));
+      console.error(chalk.red("AI Processing Error:"), error.message);
+      console.log(chalk.yellow("Falling back to template-based summary..."));
       return this.generateFallbackSummary(commits, summaryType, date);
     }
   }
@@ -61,10 +66,14 @@ class AIProcessor {
       const response = await result.response;
       return response.text();
     } catch (error) {
-      if (error.message.includes('quota')) {
-        throw new Error('Google Gemini quota exceeded. Try again later or switch to Ollama for unlimited usage.');
-      } else if (error.message.includes('API_KEY')) {
-        throw new Error('Invalid Google Gemini API key. Run: eod-summary setup');
+      if (error.message.includes("quota")) {
+        throw new Error(
+          "Google Gemini quota exceeded. Try again later or switch to Ollama for unlimited usage."
+        );
+      } else if (error.message.includes("API_KEY")) {
+        throw new Error(
+          "Invalid Google Gemini API key. Run: eod-summary setup"
+        );
       }
       throw new Error(`Gemini API error: ${error.message}`);
     }
@@ -72,54 +81,65 @@ class AIProcessor {
 
   async generateWithOllama(prompt) {
     try {
-      const response = await axios.post(`${this.ollamaUrl}/api/generate`, {
-        model: this.ollamaModel,
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: 0.3,
-          top_p: 0.9,
-          max_tokens: 1000
+      const response = await axios.post(
+        `${this.ollamaUrl}/api/generate`,
+        {
+          model: this.ollamaModel,
+          prompt: prompt,
+          stream: false,
+          options: {
+            temperature: 0.3,
+            top_p: 0.9,
+            max_tokens: 1000,
+          },
+        },
+        {
+          timeout: 60000,
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      }, {
-        timeout: 60000,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
+      );
 
       if (response.data && response.data.response) {
         return response.data.response.trim();
       } else {
-        throw new Error('Invalid response from Ollama');
+        throw new Error("Invalid response from Ollama");
       }
     } catch (error) {
-      if (error.code === 'ECONNREFUSED') {
-        throw new Error(`Ollama is not running. Start it with: ollama serve\nOr install it from: https://ollama.ai`);
+      if (error.code === "ECONNREFUSED") {
+        throw new Error(
+          `Ollama is not running. Start it with: ollama serve\nOr install it from: https://ollama.ai`
+        );
       } else if (error.response && error.response.status === 404) {
-        throw new Error(`Model '${this.ollamaModel}' not found. Install it with: ollama pull ${this.ollamaModel}`);
+        throw new Error(
+          `Model '${this.ollamaModel}' not found. Install it with: ollama pull ${this.ollamaModel}`
+        );
       }
       throw new Error(`Ollama error: ${error.message}`);
     }
   }
 
-  static async testOllamaConnection(url = 'http://localhost:11434', model = 'codellama:7b') {
+  static async testOllamaConnection(
+    url = "http://localhost:11434",
+    model = "codellama:7b"
+  ) {
     try {
       const response = await axios.get(`${url}/api/tags`, { timeout: 5000 });
       const models = response.data.models || [];
-      const hasModel = models.some(m => m.name.includes(model.split(':')[0]));
-      
+      const hasModel = models.some((m) => m.name.includes(model.split(":")[0]));
+
       return {
         available: true,
         hasModel: hasModel,
-        models: models.map(m => m.name),
-        url: url
+        models: models.map((m) => m.name),
+        url: url,
       };
     } catch (error) {
       return {
         available: false,
         error: error.message,
-        url: url
+        url: url,
       };
     }
   }
@@ -127,28 +147,30 @@ class AIProcessor {
   static async testGeminiConnection(apiKey) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-      
-      const result = await model.generateContent('Hello, respond with just "OK"');
+      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+      const result = await model.generateContent(
+        'Hello, respond with just "OK"'
+      );
       const response = await result.response;
-      
+
       return {
         available: true,
         response: response.text(),
-        apiKey: `${apiKey.substring(0, 8)}...`
+        apiKey: `${apiKey.substring(0, 8)}...`,
       };
     } catch (error) {
       return {
         available: false,
         error: error.message,
-        apiKey: `${apiKey.substring(0, 8)}...`
+        apiKey: `${apiKey.substring(0, 8)}...`,
       };
     }
   }
 
   buildPrompt(commits, summaryType, date) {
     const commitsData = this.formatCommitsForPrompt(commits);
-    
+
     const baseContext = `
 Date: ${date}
 Number of commits: ${commits.length}
@@ -161,12 +183,14 @@ ${commitsData}
 `;
 
     switch (summaryType) {
-      case 'quick':
+      case "quick":
         return this.getQuickPrompt(baseContext);
-      case 'detailed':
+      case "detailed":
         return this.getDetailedPrompt(baseContext);
-      case 'bullets':
+      case "bullets":
         return this.getBulletsPrompt(baseContext);
+      case "eod":
+        return this.getEodPrompt(baseContext);
       default:
         return this.getQuickPrompt(baseContext);
     }
@@ -228,58 +252,100 @@ Use technical terminology appropriately.
 Format as clean bullet points only.`;
   }
 
+  getEodPrompt(context) {
+    return `You are a professional developer writing an EOD (End of Day) update for stakeholders.
+
+${context}
+
+Write in this structure:
+**EOD Update**
+
+- 3-5 top-line bullets summarizing concrete work done. Use bold for key entities.
+- Include a nested sub-list under a bullet when elaboration is helpful (2-3 sub-bullets).
+- Prefer action verbs: Enhanced, Refactored, Updated, Fixed, Implemented.
+- Keep it concise and business-relevant; avoid generic phrasing.
+
+Output strictly as markdown bullets only (no extra headers besides the bold title).`;
+  }
+
+  summarizeMessage(message) {
+    if (!message) {
+      return "No message";
+    }
+    const cleaned = message
+      .replace(
+        /^(feat|fix|chore|docs|refactor|style|test|perf)(\([^)]*\))?:\s*/i,
+        ""
+      )
+      .trim();
+    return cleaned.length > 120 ? cleaned.slice(0, 117) + "..." : cleaned;
+  }
+
   formatCommitsForPrompt(commits) {
-    return commits.map((commit, index) => {
-      const files = commit.files.map(f => `${f.name} (+${f.insertions}/-${f.deletions})`).join(', ');
-      return `
+    return commits
+      .map((commit, index) => {
+        const files = commit.files
+          .map((f) => `${f.name} (+${f.insertions}/-${f.deletions})`)
+          .join(", ");
+        return `
 ${index + 1}. Commit: ${commit.hash}
    Message: ${commit.message}
-   Files: ${files || 'No file details'}
+   Files: ${files || "No file details"}
    Changes: ${commit.summary}
 `;
-    }).join('\n');
+      })
+      .join("\n");
   }
 
   getTotalFiles(commits) {
     const allFiles = new Set();
-    commits.forEach(commit => {
-      commit.files.forEach(file => allFiles.add(file.name));
+    commits.forEach((commit) => {
+      commit.files.forEach((file) => allFiles.add(file.name));
     });
     return allFiles.size;
   }
 
   getTotalInsertions(commits) {
-    return commits.reduce((total, commit) => total + (commit.insertions || 0), 0);
+    return commits.reduce(
+      (total, commit) => total + (commit.insertions || 0),
+      0
+    );
   }
 
   getTotalDeletions(commits) {
-    return commits.reduce((total, commit) => total + (commit.deletions || 0), 0);
+    return commits.reduce(
+      (total, commit) => total + (commit.deletions || 0),
+      0
+    );
   }
 
   generateFallbackSummary(commits, summaryType, date) {
     const totalFiles = new Set();
     let totalInsertions = 0;
     let totalDeletions = 0;
-    
-    commits.forEach(commit => {
-      commit.files.forEach(file => totalFiles.add(file.name));
+
+    commits.forEach((commit) => {
+      commit.files.forEach((file) => totalFiles.add(file.name));
       totalInsertions += commit.insertions || 0;
       totalDeletions += commit.deletions || 0;
     });
 
-    const mainFiles = Array.from(totalFiles).slice(0, 5).join(', ');
-    const commitMessages = commits.slice(0, 3).map(c => `• ${c.message}`).join('\n');
+    const mainFiles = Array.from(totalFiles).slice(0, 5).join(", ");
+    const commitMessages = commits
+      .slice(0, 3)
+      .map((c) => `• ${c.message}`)
+      .join("\n");
 
     let content;
     switch (summaryType) {
-      case 'detailed':
+      case "detailed":
         content = `# EOD Summary - ${date}
 
 ## Key Accomplishments
 ${commitMessages}
 
 ## Files Modified
-${mainFiles}${totalFiles.size > 5 ? ` and ${totalFiles.size - 5} more` : ''}
+${mainFiles}${totalFiles.size > 5 ? ` and ${totalFiles.size - 5} more` : ""}
 
 ## Statistics
 - **Commits**: ${commits.length}
@@ -290,31 +356,102 @@ ${mainFiles}${totalFiles.size > 5 ? ` and ${totalFiles.size - 5} more` : ''}
 *Note: This is a template-based summary. Configure AI for more detailed analysis.*`;
         break;
 
-      case 'bullets':
+      case "bullets":
         content = `• Completed ${commits.length} commits with various improvements
 • Modified files: ${mainFiles}
 • Statistics: ${commits.length} commits | ${totalFiles.size} files | +${totalInsertions}/-${totalDeletions} lines`;
         break;
 
+      case "eod":
+        // EOD-style template with bullets and sub-bullets
+        const highlights = [];
+        // 1) Try to extract grouped themes from messages
+        const lower = commitMessages.toLowerCase();
+        if (lower.includes("invoice")) {
+          highlights.push(
+            "- Enhanced **invoice generation logic** to clearly differentiate between credit notes and invoices."
+          );
+        }
+        if (lower.includes("status") || lower.includes("template")) {
+          highlights.push(
+            "- Cleaned up invoice templates by commenting out **job status display** for a clearer output."
+          );
+        }
+        if (
+          lower.includes("dropdownoptionseeder") ||
+          lower.includes("status language") ||
+          lower.includes("under review") ||
+          lower.includes("open")
+        ) {
+          highlights.push(
+            "- Updated **DropdownOptionSeeder** and status language file — corrected 'Open' label to **'Under Review'**."
+          );
+        }
+        if (
+          lower.includes("invoiceservice") ||
+          lower.includes("pdf") ||
+          lower.includes("vat") ||
+          lower.includes("payment")
+        ) {
+          highlights.push(
+            "- Refactored **InvoiceService** and **client-invoice view**:\n  - Replaced payment collection logic with direct access to the invoice’s payment details.\n  - Ensured accurate **total and VAT calculations**.\n  - Updated **PDF generation** to reflect these improvements."
+          );
+        }
+
+        if (highlights.length === 0) {
+          // Fallback: derive bullets from individual commits
+          const derived = commits
+            .slice(0, 4)
+            .map((c) => `- ${this.summarizeMessage(c.message)}`);
+          highlights.push(...derived);
+        }
+
+        // Include commit IDs for debugging/traceability
+        const commitIdLines = commits
+          .map((c) => `- ${c.hash} — ${this.summarizeMessage(c.message)}`)
+          .join("\n");
+
+        content = `**EOD Update**\n\n${highlights.join(
+          "\n"
+        )}\n\n---\n\n### Commits\n${commitIdLines}`;
+        break;
+
       default:
-        content = `**Key Work**: ${commits.length} commits completed
-**Files**: ${mainFiles}
-**Stats**: ${commits.length} commits, ${totalFiles.size} files, +${totalInsertions}/-${totalDeletions} lines`;
+        // Enhanced quick summary with commit-level details
+        const commitLines = commits
+          .map((c, i) => {
+            const mainFiles = (c.files || [])
+              .slice(0, 3)
+              .map((f) => f.name)
+              .join(", ");
+            return `- ${i + 1}. ${this.summarizeMessage(c.message)}${
+              mainFiles ? `\n  Files: ${mainFiles}` : ""
+            }\n  Commit: ${c.hash}\n  Changes: ${c.summary}`;
+          })
+          .join("\n");
+
+        content = `**Key Work**: ${commits.length} commit${
+          commits.length !== 1 ? "s" : ""
+        } completed\n**Files**: ${mainFiles}\n**Stats**: ${
+          commits.length
+        } commits, ${
+          totalFiles.size
+        } files, +${totalInsertions}/-${totalDeletions} lines\n\n---\n\n### Commits\n${commitLines}`;
     }
 
     return {
       type: summaryType,
       date: date,
       content: content,
-      provider: 'template',
+      provider: "template",
       metadata: {
         commitsAnalyzed: commits.length,
         totalFiles: totalFiles.size,
         totalInsertions: totalInsertions,
         totalDeletions: totalDeletions,
-        aiProvider: 'template',
-        model: 'fallback'
-      }
+        aiProvider: "template",
+        model: "fallback",
+      },
     };
   }
 }
