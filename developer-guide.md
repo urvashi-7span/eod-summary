@@ -24,7 +24,7 @@ Transform your daily Git commits into professional EOD updates automatically. Wo
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourcompany/eod-summary-cli.git
+git clone https://github.com/urvashi-7span/eod-summary-cli.git
 cd eod-summary-cli
 
 # Install dependencies
