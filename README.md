@@ -19,6 +19,12 @@ Transform your daily Git commits into professional summaries using AI. Works wit
 ```bash
 git clone https://github.com/urvashi-7span/eod-summary.git
 cd eod-summary
+
+# Install dependencies
+npm install
+
+# Make globally available
+npm link
 ```
 
 ## 🔧 Setup
