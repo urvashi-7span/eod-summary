@@ -15,9 +15,10 @@ Transform your daily Git commits into professional summaries using AI. Works wit
 
 ## 📦 Installation
 
-### Quick Install
+### Clone the repository
 ```bash
-npm install -g eod-summary-cli
+git clone https://github.com/urvashi-7span/eod-summary.git
+cd eod-summary
 ```
 
 ## 🔧 Setup
@@ -39,7 +40,7 @@ eod-summary
 ### Command Options
 ```bash
 # Specific date
-eod-summary --date 2024-12-15
+eod-summary -d 2024-12-15
 eod-summary -d yesterday
 
 # Summary types
