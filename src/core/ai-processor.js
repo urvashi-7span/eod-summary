@@ -339,8 +339,7 @@ ${index + 1}. Commit: ${commit.hash}
     let content;
     switch (summaryType) {
       case "detailed":
-        content = `# EOD Summary - ${date}
-
+        content = `
 ## Key Accomplishments
 ${commitMessages}
 
@@ -363,57 +362,19 @@ ${mainFiles}${totalFiles.size > 5 ? ` and ${totalFiles.size - 5} more` : ""}
         break;
 
       case "eod":
-        // EOD-style template with bullets and sub-bullets
-        const highlights = [];
-        // 1) Try to extract grouped themes from messages
-        const lower = commitMessages.toLowerCase();
-        if (lower.includes("invoice")) {
-          highlights.push(
-            "- Enhanced **invoice generation logic** to clearly differentiate between credit notes and invoices."
-          );
-        }
-        if (lower.includes("status") || lower.includes("template")) {
-          highlights.push(
-            "- Cleaned up invoice templates by commenting out **job status display** for a clearer output."
-          );
-        }
-        if (
-          lower.includes("dropdownoptionseeder") ||
-          lower.includes("status language") ||
-          lower.includes("under review") ||
-          lower.includes("open")
-        ) {
-          highlights.push(
-            "- Updated **DropdownOptionSeeder** and status language file — corrected 'Open' label to **'Under Review'**."
-          );
-        }
-        if (
-          lower.includes("invoiceservice") ||
-          lower.includes("pdf") ||
-          lower.includes("vat") ||
-          lower.includes("payment")
-        ) {
-          highlights.push(
-            "- Refactored **InvoiceService** and **client-invoice view**:\n  - Replaced payment collection logic with direct access to the invoice’s payment details.\n  - Ensured accurate **total and VAT calculations**.\n  - Updated **PDF generation** to reflect these improvements."
-          );
-        }
+        // EOD-style template with clean bullets from actual commits
+        // Generate concise highlights (top 5 commits, business-focused)
+        const highlights = commits
+          .slice(0, 5)
+          .map((c) => `- ${this.summarizeMessage(c.message)}`)
+          .join("\n");
 
-        if (highlights.length === 0) {
-          // Fallback: derive bullets from individual commits
-          const derived = commits
-            .slice(0, 4)
-            .map((c) => `- ${this.summarizeMessage(c.message)}`);
-          highlights.push(...derived);
-        }
-
-        // Include commit IDs for debugging/traceability
+        // Include commit IDs with full details for debugging/traceability
         const commitIdLines = commits
           .map((c) => `- ${c.hash} — ${this.summarizeMessage(c.message)}`)
           .join("\n");
 
-        content = `**EOD Update**\n\n${highlights.join(
-          "\n"
-        )}\n\n---\n\n### Commits\n${commitIdLines}`;
+        content = `**EOD Update**\n\n${highlights}\n\n---\n\n### Commits\n${commitIdLines}`;
         break;
 
       default:

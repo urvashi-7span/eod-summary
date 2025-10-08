@@ -8,6 +8,21 @@ Transform your daily Git commits into professional EOD updates automatically. Wo
 [![Node.js](https://img.shields.io/badge/node-%3E%3D14.0.0-brightgreen)](https://nodejs.org/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](#installation)
 
+## 📋 System Requirements
+
+Before installing, ensure you have:
+
+- **Node.js**: >= 14.0.0 ([Download](https://nodejs.org/))
+- **npm**: >= 6.0.0 (comes with Node.js)
+- **Platform**: Linux, macOS, or Windows
+
+To verify your installation:
+
+```bash
+node --version  # Should show v14.0.0 or higher
+npm --version   # Should show 6.0.0 or higher
+```
+
 ## ✨ Features
 
 - 🤖 **Dual AI Support**: Local AI (Ollama) or Cloud AI (Google Gemini)
@@ -68,11 +83,13 @@ eod-summary setup
 This will guide you through:
 
 1. **AI Provider Selection**:
+
    - 🤖 **Ollama (Local AI)** - 100% Free, Private, Offline
    - ☁️ **Google Gemini** - Cloud AI, Free tier available
    - 📝 **Template Only** - No AI, just smart formatting
 
 2. **Provider-specific Configuration**:
+
    - **Ollama**: Model selection and server URL
    - **Gemini**: API key and model selection
 
@@ -85,11 +102,13 @@ This will guide you through:
 Your configuration is stored locally at:
 
 **Linux/macOS:**
+
 ```bash
 ~/.eod-summary/config.json
 ```
 
 **Windows:**
+
 ```bash
 C:\Users\YourUsername\.eod-summary\config.json
 ```
@@ -104,12 +123,7 @@ C:\Users\YourUsername\.eod-summary\config.json
   "defaultSummaryType": "quick",
   "defaultOutputFormat": "markdown",
   "includeStats": true,
-  "excludePatterns": [
-    "node_modules/**",
-    "*.lock",
-    "dist/**",
-    "vendor/**"
-  ],
+  "excludePatterns": ["node_modules/**", "*.lock", "dist/**", "vendor/**"],
   "createdAt": "2024-12-15T10:30:00.000Z"
 }
 ```
@@ -125,6 +139,7 @@ C:\Users\YourUsername\.eod-summary\config.json
 5. Use it during `eod-summary setup`
 
 **Free Tier Limits:**
+
 - 15 requests per minute
 - 1,500 requests per day
 - Perfect for individual developers and small teams
@@ -145,6 +160,7 @@ ollama pull mistral:7b      # Fast and efficient (4GB)
 ```
 
 **Benefits:**
+
 - 100% free forever
 - Complete privacy (nothing leaves your machine)
 - Works offline
@@ -228,18 +244,21 @@ Date: 09/15/2024
 ## Key Accomplishments
 
 ### 🔐 Authentication System Implementation
+
 - Integrated JWT authentication with secure token management
 - Built login/logout endpoints with rate limiting
 - Added middleware for protecting authenticated routes
 - **Impact**: Enhanced security and better session management
 
 ### 💳 Payment Processing Enhancement
+
 - Resolved critical timeout issues in payment gateway
 - Implemented proper error handling and retry logic
 - Added comprehensive logging for transaction debugging
 - **Impact**: Reduced failed transactions by 40%
 
 ## Statistics
+
 - **Commits**: 8
 - **Files Changed**: 12
 - **Lines Added**: +347
@@ -285,24 +304,28 @@ cp ~/.eod-summary/config.json ~/.eod-summary/config-backup.json
 ## 🔒 Privacy & Security
 
 ### **What Gets Processed:**
+
 - ✅ **Commit messages** (the text you write when committing)
 - ✅ **File names** (not file contents)
 - ✅ **Lines added/removed** (counts only)
 - ✅ **Your Git user email** (for filtering your commits)
 
 ### **What NEVER Gets Processed:**
+
 - ❌ **Actual source code** content
 - ❌ **File contents** or sensitive data
 - ❌ **Repository structure** details
 - ❌ **Other developers' commits**
 
 ### **Local AI (Ollama) Benefits:**
+
 - 🔒 **100% Private** - Nothing ever leaves your machine
 - 🚫 **No Internet Required** - Works completely offline
 - 💰 **Zero Cost** - No API fees or subscriptions
 - 🚀 **Unlimited Usage** - No rate limits or quotas
 
 ### **Cloud AI (Gemini) Security:**
+
 - 🔐 **Encrypted Transport** - All requests use HTTPS
 - 🚫 **No Data Storage** - Google doesn't store your commit messages
 - 🎯 **Minimal Data** - Only commit messages sent, never code content
@@ -327,6 +350,7 @@ cp ~/.eod-summary/config.json ~/.eod-summary/config-backup.json
 ### **Common Issues**
 
 #### **"Not a Git repository" Error**
+
 ```bash
 # Make sure you're in a Git repository
 git status
@@ -336,6 +360,7 @@ git init
 ```
 
 #### **"No commits found" Error**
+
 ```bash
 # Check if you have commits for the date
 git log --oneline --since="2024-12-15" --author="$(git config user.email)"
@@ -346,6 +371,7 @@ git config user.email "your-email@company.com"  # if not set
 ```
 
 #### **Gemini API Errors**
+
 ```bash
 # Update to latest model
 eod-summary setup
@@ -357,6 +383,7 @@ eod-summary setup
 ```
 
 #### **Ollama Connection Issues**
+
 ```bash
 # Start Ollama service
 ollama serve
@@ -369,6 +396,7 @@ ollama pull codellama:7b
 ```
 
 #### **Permission Issues**
+
 ```bash
 # Fix config directory permissions
 chmod 755 ~/.eod-summary
@@ -384,8 +412,9 @@ git config --list | grep user
 # Test Git log manually
 git log --oneline --since="today" --author="$(git config user.email)"
 
-# Verify Node.js version
+# Verify Node.js and npm versions
 node --version  # Should be >= 14.0.0
+npm --version   # Should be >= 6.0.0
 ```
 
 ## 🎯 Best Practices
@@ -395,6 +424,7 @@ node --version  # Should be >= 14.0.0
 Your EOD summary quality depends on your commit message quality!
 
 #### **✅ Good Examples:**
+
 ```bash
 git commit -m "feat: implement JWT authentication for user login"
 git commit -m "fix: resolve payment timeout issue in checkout process"
@@ -403,20 +433,22 @@ git commit -m "refactor: optimize database queries in order service"
 ```
 
 #### **❌ Poor Examples:**
+
 ```bash
 git commit -m "changes"
-git commit -m "fix stuff"  
+git commit -m "fix stuff"
 git commit -m "update"
 git commit -m "wip"
 ```
 
 ### **Conventional Commit Format**
+
 ```bash
 git commit -m "type: description"
 
 # Types:
 feat:     # New feature
-fix:      # Bug fix  
+fix:      # Bug fix
 refactor: # Code refactoring
 docs:     # Documentation
 test:     # Tests
@@ -424,8 +456,8 @@ style:    # Formatting
 chore:    # Maintenance
 ```
 
-
 ### **Development Setup**
+
 ```bash
 git clone https://github.com/yourcompany/eod-summary-cli.git
 cd eod-summary-cli
@@ -433,8 +465,8 @@ npm install
 npm run dev
 ```
 
-
 ### **Project Structure**
+
 ```
 eod-summary-cli/
 ├── src/

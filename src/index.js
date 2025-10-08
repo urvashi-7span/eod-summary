@@ -37,7 +37,7 @@ program
     "Output format: markdown, json, plain",
     "markdown"
   )
-  .option("--mine", "Only include your commits (default includes all authors)")
+  .option("--all", "Include all authors' commits (default: only yours)")
   .option("--no-ai", "Generate summary without AI (template-based)")
   .action(async (options) => {
     try {
@@ -79,7 +79,7 @@ program
     "Output format: markdown, json, plain",
     "markdown"
   )
-  .option("--mine", "Only include your commits (default includes all authors)")
+  .option("--all", "Include all authors' commits (default: only yours)")
   .option("--no-ai", "Generate summary without AI (template-based)")
   .action(async (options) => {
     if (
@@ -106,7 +106,7 @@ async function generateSummary(options) {
     await gitParser.validateRepository();
 
     spinner.text = "Fetching commits...";
-    const includeAllAuthors = options.mine !== true; // default: include all authors
+    const includeAllAuthors = options.all === true; // default: show only your commits
     const commits = await gitParser.getCommitsByDate(date, includeAllAuthors);
 
     if (commits.length === 0) {

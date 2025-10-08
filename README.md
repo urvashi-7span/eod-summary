@@ -13,6 +13,11 @@ Transform your daily Git commits into professional summaries using AI. Works wit
 - 🌐 **Universal**: Works with any Git repository (PHP, JavaScript, Python, Java, etc.)
 - ⚡ **Fast & Easy**: One-command operation from any Git repository
 
+## 📋 Requirements
+
+- **Node.js**: >= 14.0.0
+- **npm**: >= 6.0.0
+
 ## 📦 Installation
 
 ### Clone the repository
