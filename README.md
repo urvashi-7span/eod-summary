@@ -119,6 +119,19 @@ eod-summary --format plain       # Plain text
 eod-summary --no-ai
 ```
 
+### **Additional Commands**
+
+```bash
+# View current configuration
+eod-summary config
+
+# Re-run setup wizard
+eod-summary setup
+
+# Help
+eod-summary --help
+```
+
 ## 💡 Perfect For
 
 - **Daily standups** - Quick summaries of yesterday's work
