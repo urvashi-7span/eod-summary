@@ -28,7 +28,19 @@ class GitParser {
 
       // ✅ Use full-day time boundaries explicitly in IST (UTC+05:30)
       // Build ISO-like strings with timezone offset so Git interprets ranges in IST
-      const day = new Date(date);
+      // Parse DD-MM-YYYY format
+      const parts = date.split("-");
+      let day;
+      if (parts.length === 3) {
+        // DD-MM-YYYY format
+        const dayPart = parseInt(parts[0], 10);
+        const monthPart = parseInt(parts[1], 10) - 1; // Month is 0-indexed
+        const yearPart = parseInt(parts[2], 10);
+        day = new Date(yearPart, monthPart, dayPart);
+      } else {
+        day = new Date(date);
+      }
+
       const yyyy = day.getFullYear();
       const mm = String(day.getMonth() + 1).padStart(2, "0");
       const dd = String(day.getDate()).padStart(2, "0");
