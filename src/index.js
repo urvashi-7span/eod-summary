@@ -23,7 +23,7 @@ program
   .description("Generate EOD summary for specified date")
   .option(
     "-d, --date <date>",
-    "Date for summary (YYYY-MM-DD)",
+    "Date for summary (DD-MM-YYYY)",
     formatDate(new Date())
   )
   .option(
@@ -65,7 +65,7 @@ program
 program
   .option(
     "-d, --date <date>",
-    "Date for summary (YYYY-MM-DD)",
+    "Date for summary (DD-MM-YYYY)",
     formatDate(new Date())
   )
   .option(
