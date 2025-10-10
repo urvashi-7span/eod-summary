@@ -111,7 +111,7 @@ async function setupCommand() {
 
     console.log(chalk.blue('\n📖 Usage Examples:'));
     console.log(chalk.gray('  eod-summary                    # Generate summary for today'));
-    console.log(chalk.gray('  eod-summary -d 2024-12-15     # Generate for specific date'));
+    console.log(chalk.gray('  eod-summary -d 15-12-2024     # Generate for specific date'));
     console.log(chalk.gray('  eod-summary -t detailed       # Generate detailed summary'));
     console.log(chalk.gray('  eod-summary -o report.md      # Save to file'));
     
