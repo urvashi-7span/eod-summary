@@ -16,7 +16,7 @@ class AIProcessor {
       }
       this.genAI = new GoogleGenerativeAI(config.geminiApiKey);
       this.model = this.genAI.getGenerativeModel({
-        model: config.geminiModel || "gemini-1.5-flash",
+        model: config.geminiModel || "gemini-2.0-flash-exp",
       });
     } else if (this.provider === "ollama") {
       this.ollamaUrl = config.ollamaUrl || "http://localhost:11434";
