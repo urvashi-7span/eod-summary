@@ -15,8 +15,8 @@ Transform your daily Git commits into professional summaries using AI. Works wit
 
 ## 📋 Requirements
 
-- **Node.js**: >= 14.0.0
-- **npm**: >= 6.0.0
+- **Node.js**: 18.0.0+
+- **npm**: 9.0.0+
 
 ## 📦 Installation
 

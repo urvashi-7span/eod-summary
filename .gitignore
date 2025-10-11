@@ -32,7 +32,10 @@ Thumbs.db
 .eod-summary/
 
 # IDE files
-.vscode/
 .idea/
 *.swp
 *.swo
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
+branch_structure.json
