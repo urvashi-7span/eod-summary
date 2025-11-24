@@ -13,7 +13,7 @@ class ConfigManager {
       ollamaUrl: 'http://localhost:11434',
       ollamaModel: 'codellama:7b',
       geminiApiKey: null,
-      geminiModel: 'gemini-pro',
+      geminiModel: 'gemini-2.0-flash-lite',
       defaultSummaryType: 'quick',
       defaultOutputFormat: 'markdown',
       includeStats: true,
