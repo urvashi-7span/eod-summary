@@ -263,7 +263,7 @@ Date: 09/15/2024
 - **Files Changed**: 12
 - **Lines Added**: +347
 - **Lines Removed**: -89
-- **AI Provider**: Gemini (gemini-1.5-flash)
+- **AI Provider**: Gemini (gemini-2.0-flash-exp)
 ```
 
 ## 🛠️ Configuration Management
@@ -375,7 +375,7 @@ git config user.email "your-email@company.com"  # if not set
 ```bash
 # Update to latest model
 eod-summary setup
-# Choose Gemini and select "gemini-1.5-flash"
+# Choose Gemini and select "gemini-2.0-flash-exp"
 
 # Or switch to Ollama
 eod-summary setup

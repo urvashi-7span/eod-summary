@@ -15,8 +15,8 @@ Transform your daily Git commits into professional summaries using AI. Works wit
 
 ## 📋 Requirements
 
-- **Node.js**: >= 14.0.0
-- **npm**: >= 6.0.0
+- **Node.js**: 18.0.0+
+- **npm**: 9.0.0+
 
 ## 📦 Installation
 
@@ -37,6 +37,57 @@ npm link
 ### Interactive Setup
 ```bash
 eod-summary setup
+```
+
+This will guide you through:
+
+1. **AI Provider Selection**:
+
+   - 🤖 **Ollama (Local AI)** - 100% Free, Private, Offline
+   - ☁️ **Google Gemini** - Cloud AI, Free tier available
+   - 📝 **Template Only** - No AI, just smart formatting
+
+2. **Provider-specific Configuration**:
+
+   - **Ollama**: Model selection and server URL
+   - **Gemini**: API key and model selection
+
+3. **Output Preferences**:
+   - Summary type (Quick, Detailed, Bullets)
+   - Output format (Markdown, JSON, Plain)
+
+
+
+## 🔑 Getting API Keys
+
+### **Google Gemini API Key (Free Tier Available)**
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click **"Create API Key"**
+4. Copy the generated key
+5. Use it during `eod-summary setup`
+
+**Free Tier Limits:**
+
+- 15 requests per minute
+- 1,500 requests per day
+- Perfect for individual developers and small teams
+
+### **Configuration File Location**
+
+Your configuration is stored locally at:
+
+**Linux/macOS:**
+
+```bash
+~/.eod-summary/config.json
+```
+
+**Windows:**
+
+```bash
+C:\Users\YourUsername\.eod-summary\config.json
 ```
 
 ## 🚀 Usage
@@ -66,6 +117,19 @@ eod-summary --format plain       # Plain text
 
 # Without AI (template-based)
 eod-summary --no-ai
+```
+
+### **Additional Commands**
+
+```bash
+# View current configuration
+eod-summary config
+
+# Re-run setup wizard
+eod-summary setup
+
+# Help
+eod-summary --help
 ```
 
 ## 💡 Perfect For
