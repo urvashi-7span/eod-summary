@@ -16,7 +16,7 @@ class AIProcessor {
       }
       this.genAI = new GoogleGenerativeAI(config.geminiApiKey);
       this.model = this.genAI.getGenerativeModel({
-        model: config.geminiModel || "gemini-2.0-flash-exp",
+        model: config.geminiModel || "gemini-2.0-flash-lite",
       });
     } else if (this.provider === "ollama") {
       this.ollamaUrl = config.ollamaUrl || "http://localhost:11434";
@@ -50,7 +50,7 @@ class AIProcessor {
           totalInsertions: this.getTotalInsertions(commits),
           totalDeletions: this.getTotalDeletions(commits),
           aiProvider: this.provider,
-          model: this.provider === "ollama" ? this.ollamaModel : "gemini-pro",
+          model: this.provider === "ollama" ? this.ollamaModel : this.config.geminiModel || "gemini-2.0-flash-lite",
         },
       };
     } catch (error) {
@@ -147,7 +147,7 @@ class AIProcessor {
   static async testGeminiConnection(apiKey) {
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
       const result = await model.generateContent(
         'Hello, respond with just "OK"'
@@ -217,20 +217,18 @@ Format as markdown.`;
 
 ${context}
 
-Generate a detailed professional summary with these sections:
+Generate a detailed yet concise professional summary using the following structure:
 
-1. **Executive Summary** (2-3 sentences overview of the day's work)
-2. **Key Accomplishments** (detailed descriptions of features/fixes with business impact)
-3. **Technical Implementation** (specific code changes, architecture decisions, technologies used)
-4. **Files Modified** (grouped by functionality with explanations of changes)
-5. **Impact Assessment** (performance, security, user experience improvements)
-6. **Statistics** (detailed metrics)
+1. **Executive Summary**: A brief 2-sentence overview of the day's main objectives and progress.
+2. **Key Accomplishments**: Concise bullet points describing major features, fixes, or improvements, each with a clear statement of business or technical value.
+3. **Technical Highlights**: Summarize important technical changes such as major code updates, refactoring, or new technology adoption, focusing on crucial details.
+4. **Files Modified**: Group related files together and provide a one-line explanation for each group or important file.
+5. **Impact Assessment**: Summarize performance, security, or user experience improvements in 1-2 short bullets.
+6. **Statistics**: Display commit count, files changed, and lines added/removed in a tight, clear format.
 
-Use professional language suitable for technical stakeholders and managers.
-Be specific about technical details and business impact.
-Include relevant technical terminology and explain complex changes clearly.
-
-Format as markdown with proper headers and sections.`;
+Be succinct—avoid unnecessary elaboration, but do include essential technical and business-relevant details.
+Use professional language and relevant technical terms.
+Format the output as markdown with headers and bullet points for easy readability.`;
   }
 
   getBulletsPrompt(context) {

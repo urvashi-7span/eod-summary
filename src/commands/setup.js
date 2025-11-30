@@ -79,21 +79,12 @@ async function setupCommand() {
           name: "geminiModel",
           message: "Choose Gemini model:",
           choices: [
-            {
-              name: "gemini-2.0-flash-exp - Latest experimental model (recommended)",
-              value: "gemini-2.0-flash-exp",
-            },
-            {
-              name: "gemini-1.5-flash-002 - Stable legacy model",
-              value: "gemini-1.5-flash-002",
-            },
-            {
-              name: "gemini-1.5-pro-002 - More capable legacy model",
-              value: "gemini-1.5-pro-002",
-            },
+            { name: "gemini-2.0-flash-lite - Fast and efficient (recommended)", value: "gemini-2.0-flash-lite" },
+            { name: "gemini-2.0-flash - Balanced performance", value: "gemini-2.0-flash" },
+            { name: "gemini-2.5-flash-lite - Fastest and newest", value: "gemini-2.5-flash-lite" },    
           ],
-          default: "gemini-2.0-flash-exp",
-        },
+          default: 'gemini-2.0-flash-lite'
+        }
       ]);
 
       updatedConfig = { ...updatedConfig, ...geminiConfig };

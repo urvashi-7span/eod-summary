@@ -119,7 +119,7 @@ C:\Users\YourUsername\.eod-summary\config.json
 {
   "aiProvider": "gemini",
   "geminiApiKey": "AIzaSyC8xxx...your-key",
-  "geminiModel": "gemini-2.0-flash-exp",
+  "geminiModel": "gemini-2.0-flash-lite",
   "defaultSummaryType": "quick",
   "defaultOutputFormat": "markdown",
   "includeStats": true,
